@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlaceTalk – Anonym chatten mit Leuten an deinem Ort</title>
+  <meta name="description" content="PlaceTalk ist die anonyme Chat-App für Bars, Cafés, Hotels und Clubs. Scanne den QR-Code, chatte los – ohne Anmeldung, ohne Datenspur.">
+  <meta property="og:title" content="PlaceTalk – Anonym chatten an deinem Ort">
+  <meta property="og:description" content="Die anonyme Chat-App für Bars, Cafés, Hotels und Clubs. QR-Code scannen, loschatten.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --flame: #F26522;
+      --flame-light: #FF8A50;
+      --flame-dark: #D14E0F;
+      --night: #0D0D0D;
+      --night-soft: #1A1A2E;
+      --cream: #FFF8F0;
+      --cream-dark: #F5EDE3;
+      --text: #2D2D2D;
+      --text-muted: #6B6B6B;
+      --glass: rgba(255, 255, 255, 0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      background: var(--cream);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============= NAVIGATION ============= */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      transition: all 0.4s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(13, 13, 13, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0.7rem 2rem;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--flame); }
+
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: white; }
+
+    .nav-cta {
+      background: var(--flame) !important;
+      color: white !important;
+      padding: 0.6rem 1.5rem;
+      border-radius: 100px;
+      font-weight: 600 !important;
+      transition: transform 0.3s, box-shadow 0.3s !important;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(242, 101, 34, 0.4);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: white;
+      margin: 6px 0;
+      transition: all 0.3s;
+      border-radius: 2px;
+    }
+
+    /* ============= HERO ============= */
+    .hero {
+      min-height: 100vh;
+      background: var(--night);
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 80vw;
+      height: 80vw;
+      background: radial-gradient(circle, rgba(242,101,34,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(242,101,34,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+      font-weight: 900;
+      color: white;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-text h1 .highlight {
+      background: linear-gradient(135deg, var(--flame), var(--flame-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-text p {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      color: white;
+      padding: 1rem 2.2rem;
+      border-radius: 100px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(242,101,34,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 35px rgba(242,101,34,0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--glass);
+      color: white;
+      padding: 1rem 2.2rem;
+      border-radius: 100px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* Phone Mockup */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 560px;
+      background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.1),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+      animation: phoneFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes phoneFloat {
+      0%, 100% { transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(0); }
+      50% { transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(-15px); }
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #111, #1a1a2e);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #1a1a1a;
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+
+    .phone-chat-header {
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      padding: 2.5rem 1.2rem 1rem;
+      text-align: center;
+    }
+
+    .phone-chat-header .location-icon { font-size: 1.5rem; }
+    .phone-chat-header h3 { color: white; font-size: 0.95rem; font-weight: 700; margin-top: 0.3rem; }
+    .phone-chat-header p { color: rgba(255,255,255,0.7); font-size: 0.7rem; margin-top: 0.2rem; }
+
+    .phone-messages {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .msg {
+      padding: 0.6rem 0.9rem;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      max-width: 85%;
+      animation: msgFade 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .msg-other {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-self {
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-name {
+      font-size: 0.6rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      opacity: 0.7;
+    }
+
+    .msg:nth-child(1) { animation-delay: 0.5s; }
+    .msg:nth-child(2) { animation-delay: 1.2s; }
+    .msg:nth-child(3) { animation-delay: 1.9s; }
+    .msg:nth-child(4) { animation-delay: 2.6s; }
+    .msg:nth-child(5) { animation-delay: 3.3s; }
+
+    @keyframes msgFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .floating-badge {
+      position: absolute;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 0.8rem 1.2rem;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      animation: badgeFloat 4s ease-in-out infinite;
+    }
+
+    .badge-1 { top: 15%; left: -40px; animation-delay: 0s; }
+    .badge-2 { bottom: 20%; right: -50px; animation-delay: 2s; }
+
+    @keyframes badgeFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ============= SO FUNKTIONIERT'S ============= */
+    .section { padding: 7rem 2rem; }
+
+    .section-dark {
+      background: var(--night);
+      color: white;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 4rem;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--flame);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .section-dark .section-label { color: var(--flame-light); }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .section-dark .section-header p { color: rgba(255,255,255,0.5); }
+
+    /* Steps */
+    .steps-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 80px;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--flame), transparent);
+      opacity: 0.3;
+    }
+
+    .step-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+
+    .step-number {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 8px 30px rgba(242,101,34,0.25);
+      position: relative;
+      z-index: 2;
+    }
+
+    .step-card h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: var(--night);
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* ============= FEATURES ============= */
+    .features-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 2.5rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--flame), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .feature-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(242,101,34,0.2);
+      transform: translateY(-4px);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, rgba(242,101,34,0.15), rgba(242,101,34,0.05));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* ============= VENUES SECTION ============= */
+    .venues-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .venue-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .venue-benefit {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .venue-benefit-icon {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(242,101,34,0.2);
+    }
+
+    .venue-benefit h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--night);
+      margin-bottom: 0.3rem;
+    }
+
+    .venue-benefit p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .venue-visual {
+      background: linear-gradient(145deg, var(--night), var(--night-soft));
+      border-radius: 32px;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .venue-visual::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(242,101,34,0.1), transparent);
+    }
+
+    .venue-stat {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .venue-stat:last-child { border-bottom: none; }
+
+    .venue-stat .number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--flame-light);
+      letter-spacing: -1px;
+    }
+
+    .venue-stat .label {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+
+    /* ============= PRICING ============= */
+    .pricing-cards {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .price-card {
+      background: white;
+      border-radius: 28px;
+      padding: 3rem;
+      border: 2px solid transparent;
+      transition: all 0.4s;
+      position: relative;
+    }
+
+    .price-card.featured {
+      border-color: var(--flame);
+      box-shadow: 0 20px 60px rgba(242,101,34,0.15);
+    }
+
+    .price-tag-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--flame), var(--flame-dark));
+      color: white;
+      padding: 0.4rem 1.5rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .price-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .price-amount {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--night);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .price-amount span {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .price-period {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: var(--flame);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .price-card .btn-primary { width: 100%; justify-content: center; }
+
+    .price-card .btn-outline {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 2rem;
+      border: 2px solid #ddd;
+      border-radius: 100px;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .price-card .btn-outline:hover {
+      border-color: var(--flame);
+      color: var(--flame);
+    }
+
+    /* ============= FAQ ============= */
+    .faq-list {
+      max-width: 750px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .faq-item {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .faq-item:hover { border-color: rgba(255,255,255,0.15); }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      color: white;
+      padding: 1.3rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Outfit', sans-serif;
+      transition: color 0.3s;
+    }
+
+    .faq-question:hover { color: var(--flame-light); }
+
+    .faq-arrow {
+      transition: transform 0.3s;
+      font-size: 1.2rem;
+      opacity: 0.5;
+    }
+
+    .faq-item.open .faq-arrow { transform: rotate(45deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0 1.5rem 1.3rem;
+    }
+
+    .faq-answer p {
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    /* ============= CTA ============= */
+    .cta-section {
+      padding: 7rem 2rem;
+      background: var(--cream);
+      text-align: center;
+    }
+
+    .cta-box {
+      max-width: 800px;
+      margin: 0 auto;
+      background: linear-gradient(145deg, var(--night), var(--night-soft));
+      border-radius: 36px;
+      padding: 4rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 70% 30%, rgba(242,101,34,0.1), transparent 50%);
+    }
+
+    .cta-box h2 {
+      position: relative;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+    }
+
+    .cta-box p {
+      position: relative;
+      color: rgba(255,255,255,0.5);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-box .btn-primary { position: relative; font-size: 1.1rem; padding: 1.1rem 2.5rem; }
+
+    /* ============= FOOTER ============= */
+    footer {
+      background: var(--night);
+      color: rgba(255,255,255,0.4);
+      padding: 3rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .footer-logo span { color: var(--flame); }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--flame-light); }
+
+    .footer-copy { font-size: 0.8rem; }
+
+    /* ============= RESPONSIVE ============= */
+    @media (max-width: 900px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: 7rem;
+      }
+
+      .hero-text p { margin-left: auto; margin-right: auto; }
+      .hero-buttons { justify-content: center; }
+
+      .hero-visual { margin-top: 2rem; }
+      .phone-frame { transform: none; animation: phoneFloat 6s ease-in-out infinite; }
+
+      .floating-badge { display: none; }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+      }
+
+      .steps-grid::before { display: none; }
+
+      .features-grid { grid-template-columns: 1fr; }
+
+      .venues-content { grid-template-columns: 1fr; }
+
+      .pricing-cards { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+
+      .nav-links { display: none; }
+      .mobile-menu-btn { display: block; }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-text h1 { letter-spacing: -1px; }
+      .cta-box { padding: 3rem 1.5rem; }
+      .feature-card { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Place<span>Talk</span></a>
+      <div class="nav-links">
+        <a href="#so-gehts">So geht's</a>
+        <a href="#features">Features</a>
+        <a href="#fuer-locations">Für Locations</a>
+        <a href="#preise">Preise</a>
+        <a href="https://placetalk-one.vercel.app" class="nav-cta" target="_blank">App öffnen →</a>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobile()" aria-label="Menü">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Chatte anonym mit Leuten <span class="highlight">an deinem Ort.</span></h1>
+        <p>QR-Code scannen, loschatten. Kein Account, keine Datenspur. In Bars, Cafés, Hotels und Clubs – PlaceTalk verbindet Menschen, die gerade am selben Ort sind.</p>
+        <div class="hero-buttons">
+          <a href="https://placetalk-one.vercel.app" class="btn-primary" target="_blank">
+            Jetzt ausprobieren →
+          </a>
+          <a href="#so-gehts" class="btn-secondary">
+            So funktioniert's
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-badge badge-1">🔒 100% Anonym</div>
+        <div class="floating-badge badge-2">📍 Standortbasiert</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-chat-header">
+              <div class="location-icon">🍸</div>
+              <h3>Bar zur Altstadt</h3>
+              <p>12 Leute online</p>
+            </div>
+            <div class="phone-messages">
+              <div class="msg msg-other">
+                <div class="msg-name">Anonymer Fuchs 🦊</div>
+                Hey, hat jemand den DJ-Namen?
+              </div>
+              <div class="msg msg-self">
+                Der ist mega gut heute!
+              </div>
+              <div class="msg msg-other">
+                <div class="msg-name">Stille Eule 🦉</div>
+                Ist hier noch wer zum ersten Mal?
+              </div>
+              <div class="msg msg-self">
+                Ja! Und es lohnt sich 🙌
+              </div>
+              <div class="msg msg-other">
+                <div class="msg-name">Anonymer Fuchs 🦊</div>
+                Lasst uns eine Runde zusammen trinken?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SO GEHT'S -->
+  <section class="section" id="so-gehts">
+    <div class="section-header">
+      <span class="section-label">So geht's</span>
+      <h2>In 3 Schritten dabei</h2>
+      <p>Kein Download, keine Registrierung. Einfach QR-Code scannen und loschatten.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>QR-Code scannen</h3>
+        <p>In der Location findest du einen QR-Code – scanne ihn mit deinem Handy oder gib den Location-Code ein.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>3 Stunden freischalten</h3>
+        <p>Nach einer kostenlosen Testphase schaltest du für nur 3 € den vollen Zugang für 3 Stunden frei.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Anonym loschatten</h3>
+        <p>Chatte im Gruppenchat der Location oder schreib anderen Nutzern privat – ganz ohne deinen echten Namen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section-dark" id="features">
+    <div class="section-header">
+      <span class="section-label">Features</span>
+      <h2>Alles, was du brauchst</h2>
+      <p>Entwickelt für spontane Verbindungen – sicher, anonym und unkompliziert.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎭</div>
+        <h3>Komplett anonym</h3>
+        <p>Kein Account, kein Klarname. Du bekommst einen zufälligen Nickname mit Tier-Emoji – niemand weiß, wer du bist.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Gruppen- & Privatchat</h3>
+        <p>Im Gruppenchat erreichst du alle an der Location. Per privater Chat-Anfrage könnt ihr zu zweit weiterreden.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Standortgebunden</h3>
+        <p>Jede Location hat ihren eigenen Chatraum. Du chattest ausschließlich mit Menschen, die gerade am selben Ort sind.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>DSGVO-konform</h3>
+        <p>Keine persönlichen Daten, keine Tracking-Profile. Deine Chat-Session wird nach Ablauf automatisch gelöscht.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Sofort startklar</h3>
+        <p>Web-App direkt im Browser – kein Download aus dem App Store nötig. QR scannen und du bist drin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Moderation & Sicherheit</h3>
+        <p>Melde-System, automatische Inhaltsfilter und aktive Moderation sorgen für eine sichere Chat-Umgebung.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FÜR LOCATIONS -->
+  <section class="section" id="fuer-locations">
+    <div class="section-header">
+      <span class="section-label">Für Location-Besitzer</span>
+      <h2>Mehr Interaktion, mehr Gäste</h2>
+      <p>Biete deinen Gästen ein einzigartiges Erlebnis und heb dich von der Konkurrenz ab.</p>
+    </div>
+    <div class="venues-content">
+      <div class="venue-benefits">
+        <div class="venue-benefit">
+          <div class="venue-benefit-icon">🎯</div>
+          <div>
+            <h3>Kostenlos registrieren</h3>
+            <p>Melde deine Bar, dein Café oder deinen Club in Sekunden an – komplett kostenlos.</p>
+          </div>
+        </div>
+        <div class="venue-benefit">
+          <div class="venue-benefit-icon">📱</div>
+          <div>
+            <h3>QR-Code zum Ausdrucken</h3>
+            <p>Erhalte sofort professionelle QR-Codes als druckfertige Tischaufsteller für deine Location.</p>
+          </div>
+        </div>
+        <div class="venue-benefit">
+          <div class="venue-benefit-icon">🤝</div>
+          <div>
+            <h3>Gäste vernetzen</h3>
+            <p>Deine Gäste lernen sich kennen, fühlen sich wohler und bleiben länger – gut für dein Geschäft.</p>
+          </div>
+        </div>
+        <div class="venue-benefit">
+          <div class="venue-benefit-icon">📊</div>
+          <div>
+            <h3>Alleinstellungsmerkmal</h3>
+            <p>Biete etwas, das andere Locations nicht haben – ein modernes Tool für mehr Atmosphäre.</p>
+          </div>
+        </div>
+      </div>
+      <div class="venue-visual">
+        <div class="venue-stat">
+          <div class="number">30 Sek.</div>
+          <div class="label">Registrierung für Locations</div>
+        </div>
+        <div class="venue-stat">
+          <div class="number">0 €</div>
+          <div class="label">Kosten für Location-Besitzer</div>
+        </div>
+        <div class="venue-stat">
+          <div class="number">∞</div>
+          <div class="label">Unbegrenzte Gäste-Chats</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREISE -->
+  <section class="section" id="preise" style="background: var(--cream-dark);">
+    <div class="section-header">
+      <span class="section-label">Preise</span>
+      <h2>Einfach und fair</h2>
+      <p>Erst ausprobieren, dann entscheiden. Keine Abos, keine versteckten Kosten.</p>
+    </div>
+    <div class="pricing-cards">
+      <div class="price-card">
+        <h3>Kostenlos testen</h3>
+        <div class="price-amount">0 €</div>
+        <div class="price-period">Gratis Testphase</div>
+        <ul class="price-features">
+          <li>Gruppenchat lesen & schreiben</li>
+          <li>Anonymes Profil erstellen</li>
+          <li>Location entdecken</li>
+        </ul>
+        <a href="https://placetalk-one.vercel.app" class="btn-outline" target="_blank">Gratis testen</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tag-badge">BELIEBT</div>
+        <h3>Vollzugang</h3>
+        <div class="price-amount">3 € <span>einmalig</span></div>
+        <div class="price-period">3 Stunden voller Zugang</div>
+        <ul class="price-features">
+          <li>Alles aus der Testphase</li>
+          <li>Private Nachrichten senden</li>
+          <li>Chat-Anfragen an andere Nutzer</li>
+          <li>3 Stunden lang uneingeschränkt</li>
+        </ul>
+        <a href="https://placetalk-one.vercel.app" class="btn-primary" target="_blank">Jetzt freischalten →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-dark" id="faq">
+    <div class="section-header">
+      <span class="section-label">FAQ</span>
+      <h2>Häufige Fragen</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Muss ich mich registrieren?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Nein. PlaceTalk funktioniert komplett ohne Registrierung. Du bekommst automatisch ein anonymes Profil mit einem zufälligen Tier-Nickname.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Kann jemand herausfinden, wer ich bin?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Nein. Wir speichern keine persönlichen Daten und dein Profil wird nach Ablauf der Session automatisch gelöscht. Andere Nutzer sehen nur deinen zufälligen Nickname.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Muss ich eine App installieren?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Nein. PlaceTalk ist eine Web-App, die direkt in deinem Browser läuft. Einfach QR-Code scannen oder den Link öffnen – fertig.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Wie funktioniert die Zahlung?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Die Zahlung läuft sicher über Stripe. Du bezahlst einmalig 3 € per Karte – kein Abo, keine automatische Verlängerung. Dein Zugang ist sofort nach Zahlung aktiv.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Ich besitze eine Bar/ein Café – was kostet es mich?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Nichts! Die Registrierung deiner Location ist komplett kostenlos. Du bekommst sofort QR-Codes zum Ausdrucken und deine Gäste können direkt loschatten.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Ist PlaceTalk nur in Deutschland verfügbar?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Aktuell ist PlaceTalk auf Deutschland fokussiert. Wir arbeiten daran, den Dienst auch in anderen Ländern verfügbar zu machen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-box">
+      <h2>Bereit für echte Verbindungen?</h2>
+      <p>Scanne den QR-Code in deiner Lieblingsbar und chatte los – anonym und unkompliziert.</p>
+      <a href="https://placetalk-one.vercel.app" class="btn-primary" target="_blank">PlaceTalk starten →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Place<span>Talk</span></div>
+      <div class="footer-links">
+        <a href="https://placetalk-one.vercel.app/impressum" target="_blank">Impressum</a>
+        <a href="https://placetalk-one.vercel.app/datenschutz" target="_blank">Datenschutz</a>
+        <a href="https://placetalk-one.vercel.app/agb" target="_blank">AGB</a>
+        <a href="mailto:placetalkone@gmail.com">Kontakt</a>
+      </div>
+      <div class="footer-copy">© 2025 PlaceTalk. Alle Rechte vorbehalten.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // FAQ toggle
+    function toggleFaq(btn) {
+      const item = btn.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    // Mobile menu
+    function toggleMobile() {
+      const links = document.querySelector('.nav-links');
+      if (links.style.display === 'flex') {
+        links.style.display = 'none';
+      } else {
+        links.style.display = 'flex';
+        links.style.flexDirection = 'column';
+        links.style.position = 'absolute';
+        links.style.top = '100%';
+        links.style.left = '0';
+        links.style.right = '0';
+        links.style.background = 'rgba(13,13,13,0.98)';
+        links.style.padding = '1.5rem 2rem';
+        links.style.gap = '1rem';
+        links.style.borderTop = '1px solid rgba(255,255,255,0.1)';
+      }
+    }
+
+    // Smooth reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.step-card, .feature-card, .venue-benefit, .price-card, .faq-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
